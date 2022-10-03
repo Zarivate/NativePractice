@@ -1,53 +1,58 @@
 import { useState } from "react";
 import {
   StyleSheet,
-  Text,
   View,
-  Button,
-  TextInput,
-  ScrollView,
+  // ScrollView best for small non dynamic lists since it loads all of a lists content at once, even if not on user screen
+  // has potential too slow down app
+  // Best for larger dynamic lists where you want the rest of a list too load as the user navigates to it
+  FlatList,
 } from "react-native";
 
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
+
 export default function App() {
-  const [userGoalText, setUserGoalText] = useState("");
   const [userGoals, setUserGoals] = useState([]);
 
-  function typeGoalHandler(userText) {
-    setUserGoalText(userText);
+  function addGoalHandler(userGoalText) {
+    setUserGoals((currentGoals) => [
+      ...currentGoals,
+      { text: userGoalText, id: Math.random().toString() },
+    ]);
   }
 
-  function addGoalHandler() {
-    setUserGoals((currentGoals) => [...currentGoals, userGoalText]);
+  function deleteGoal(id) {
+    setUserGoals((currentGoals) => {
+      return currentGoals.filter((goal) => goal.id !== id);
+    });
   }
 
   return (
     // More than on stylesheet can be used in the JSC code because of how the whole file is
     // parsed firsthand before executing anything
     <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputAdjustment}
-          placeholder="Your course goal!"
-          // No parentheses are added here "()", in other words it's not executed since if the parentheses were added the function
-          // would execute immediately upon parsing this section of code, which could mess up the UI. As it is now, instead it will
-          // now have React execute it whenever it detects a text change
-          onChangeText={typeGoalHandler}
-        />
-        <Button title="Add Goal" onPress={addGoalHandler} />
-      </View>
+      <GoalInput onAddGoal={addGoalHandler} />
       {/* In order to ensure that the correct amount of space is taken up by the user's typed goals, another view
       is made above the scroll view to have both a scrollable section and also have it take up the correct amount of space */}
       <View style={styles.goalsContainer}>
-        <ScrollView>
-          {userGoals.map((goal) => (
-            // The underlying element that View is compiled into is a widget that can have it's corners rounded, helps get around IOS
-            // restraint of underlying translated images not having same properties as Android. Styles also don't cascade here in Native
-            // It's why some text color changes may not apply to "goal" property below, as instead it's applied to the View element
-            <View style={styles.goalItem} key={goal}>
-              <Text style={styles.goalText}>{goal}</Text>
-            </View>
-          ))}
-        </ScrollView>
+        <FlatList
+          data={userGoals}
+          renderItem={(itemDataObject) => {
+            return (
+              <GoalItem
+                text={itemDataObject.item.text}
+                id={itemDataObject.item.id}
+                onDelete={deleteGoal}
+              />
+            );
+            /* The underlying element that View is compiled into is a widget that can have it's corners rounded, helps get around IOS
+            restraint of underlying translated images not having same properties as Android. Styles also don't cascade here in Native
+            It's why some text color changes may not apply to "goal" property below, as instead it's applied to the View element */
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+        />
       </View>
     </View>
   );
@@ -62,33 +67,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 16,
   },
-  inputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "blue",
-  },
-  inputAdjustment: {
-    borderWidth: 1,
-    borderColor: "#cccccc",
-    // The element that receives this styling will take up 80% of the overarching containers width
-    width: "70%",
-    marginRight: 8,
-    padding: 8,
-  },
   goalsContainer: {
     flex: 2,
-  },
-  goalItem: {
-    margin: 8,
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: "#5e0acc",
-  },
-  goalText: {
-    color: "white",
   },
 });
