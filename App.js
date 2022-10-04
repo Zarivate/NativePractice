@@ -6,13 +6,23 @@ import {
   // has potential too slow down app
   // Best for larger dynamic lists where you want the rest of a list too load as the user navigates to it
   FlatList,
+  Button,
 } from "react-native";
 
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default function App() {
+  const [modalVisible, setModalVisible] = useState(false);
   const [userGoals, setUserGoals] = useState([]);
+
+  function startAddHandler() {
+    setModalVisible(true);
+  }
+
+  function endAddHandler() {
+    setModalVisible(false);
+  }
 
   function addGoalHandler(userGoalText) {
     setUserGoals((currentGoals) => [
@@ -31,7 +41,12 @@ export default function App() {
     // More than on stylesheet can be used in the JSC code because of how the whole file is
     // parsed firsthand before executing anything
     <View style={styles.appContainer}>
-      <GoalInput onAddGoal={addGoalHandler} />
+      <Button title="Add New Goal" color="#5e0acc" onPress={startAddHandler} />
+      <GoalInput
+        visible={modalVisible}
+        onAddGoal={addGoalHandler}
+        onClose={endAddHandler}
+      />
       {/* In order to ensure that the correct amount of space is taken up by the user's typed goals, another view
       is made above the scroll view to have both a scrollable section and also have it take up the correct amount of space */}
       <View style={styles.goalsContainer}>

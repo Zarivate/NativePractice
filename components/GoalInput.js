@@ -1,4 +1,11 @@
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Modal,
+  Image,
+} from "react-native";
 import { useState } from "react";
 
 function GoalInput(props) {
@@ -16,18 +23,32 @@ function GoalInput(props) {
   }
 
   return (
-    <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.inputAdjustment}
-        placeholder="Your course goal!"
-        // No parentheses are added here "()", in other words it's not executed since if the parentheses were added the function
-        // would execute immediately upon parsing this section of code, which could mess up the UI. As it is now, instead it will
-        // now have React execute it whenever it detects a text change
-        onChangeText={typeGoalHandler}
-        value={userGoalText}
-      />
-      <Button title="Add Goal" onPress={addGoalHandler} />
-    </View>
+    <Modal visible={props.visible} animationType="slide">
+      <View style={styles.inputContainer}>
+        {/* The two dots at the start are to go up one level to reach the relative path to the image */}
+        <Image
+          style={styles.image}
+          source={require("../assets/images/goal.png")}
+        />
+        <TextInput
+          style={styles.inputAdjustment}
+          placeholder="Your course goal!"
+          // No parentheses are added here "()", in other words it's not executed since if the parentheses were added the function
+          // would execute immediately upon parsing this section of code, which could mess up the UI. As it is now, instead it will
+          // now have React execute it whenever it detects a text change
+          onChangeText={typeGoalHandler}
+          value={userGoalText}
+        />
+        <View style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <Button title="Add Goal" onPress={addGoalHandler} />
+          </View>
+          <View style={styles.button}>
+            <Button title="Close" onPress={props.onClose} />
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -36,19 +57,30 @@ export default GoalInput;
 const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "blue",
+    padding: 16,
+    backgroundColor: "#311b6b",
+  },
+  image: {
+    width: 100,
+    height: 100,
+    margin: 20,
   },
   inputAdjustment: {
     borderWidth: 1,
     borderColor: "#cccccc",
     // The element that receives this styling will take up 80% of the overarching containers width
-    width: "70%",
+    width: "100%",
     marginRight: 8,
     padding: 8,
+  },
+  buttonContainer: {
+    marginTop: 16,
+    flexDirection: "row",
+  },
+  button: {
+    width: 100,
+    marginHorizontal: 8,
   },
 });
