@@ -8,6 +8,7 @@ import {
   FlatList,
   Button,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
@@ -38,38 +39,45 @@ export default function App() {
   }
 
   return (
-    // More than on stylesheet can be used in the JSC code because of how the whole file is
-    // parsed firsthand before executing anything
-    <View style={styles.appContainer}>
-      <Button title="Add New Goal" color="#5e0acc" onPress={startAddHandler} />
-      <GoalInput
-        visible={modalVisible}
-        onAddGoal={addGoalHandler}
-        onClose={endAddHandler}
-      />
-      {/* In order to ensure that the correct amount of space is taken up by the user's typed goals, another view
+    <>
+      <StatusBar style="light" />
+      {/* // More than on stylesheet can be used in the JSC code because of how the
+      whole file is // parsed firsthand before executing anything */}
+      <View style={styles.appContainer}>
+        <Button
+          title="Add New Goal"
+          color="#a065ec"
+          onPress={startAddHandler}
+        />
+        <GoalInput
+          visible={modalVisible}
+          onAddGoal={addGoalHandler}
+          onClose={endAddHandler}
+        />
+        {/* In order to ensure that the correct amount of space is taken up by the user's typed goals, another view
       is made above the scroll view to have both a scrollable section and also have it take up the correct amount of space */}
-      <View style={styles.goalsContainer}>
-        <FlatList
-          data={userGoals}
-          renderItem={(itemDataObject) => {
-            return (
-              <GoalItem
-                text={itemDataObject.item.text}
-                id={itemDataObject.item.id}
-                onDelete={deleteGoal}
-              />
-            );
-            /* The underlying element that View is compiled into is a widget that can have it's corners rounded, helps get around IOS
+        <View style={styles.goalsContainer}>
+          <FlatList
+            data={userGoals}
+            renderItem={(itemDataObject) => {
+              return (
+                <GoalItem
+                  text={itemDataObject.item.text}
+                  id={itemDataObject.item.id}
+                  onDelete={deleteGoal}
+                />
+              );
+              /* The underlying element that View is compiled into is a widget that can have it's corners rounded, helps get around IOS
             restraint of underlying translated images not having same properties as Android. Styles also don't cascade here in Native
             It's why some text color changes may not apply to "goal" property below, as instead it's applied to the View element */
-          }}
-          keyExtractor={(item, index) => {
-            return item.id;
-          }}
-        />
+            }}
+            keyExtractor={(item, index) => {
+              return item.id;
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
